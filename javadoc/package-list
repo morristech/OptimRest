@@ -1,2 +1,4 @@
 com.iagocanalejas.optimrest
+com.iagocanalejas.optimrest.cache
+com.iagocanalejas.optimrest.interfaces
 com.iagocanalejas.optimrest.logging
