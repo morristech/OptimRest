@@ -4,8 +4,9 @@ import android.util.Log;
 
 /**
  * Created by Iagocanalejas on 06/01/2017.
+ * Handle library logging so all logs will have the format:
+ * {@link Logger#DEFAULT_LOG_TAG}: TAG: message
  */
-
 public class Logger {
 
     private static final String DEFAULT_LOG_TAG = "OptimREST";

@@ -1,5 +1,6 @@
 package com.iagocanalejas.optimrest;
 
+import com.iagocanalejas.optimrest.interfaces.Parser;
 import com.iagocanalejas.optimrest.logging.Logger;
 
 /**
@@ -9,22 +10,31 @@ import com.iagocanalejas.optimrest.logging.Logger;
 public class Loader<T> {
 
     private final Logger mLogger;
+    private final Parser<T> mParser;
 
-    public Loader(Logger logger) {
-        mLogger = logger;
+    /**
+     * Default constructor
+     *
+     * @param parser {@link Parser}
+     * @param logger {@link Logger}
+     */
+    private Loader(Parser<T> parser, Logger logger) {
+        this.mParser = parser;
+        this.mLogger = logger;
     }
 
     /**
      * Provides all the configuration parameters to create a new {@link Loader}
      */
-    public class Builder {
+    public class Builder<B> {
 
         private boolean mLoggingEnabled = false;
+        private Parser<B> mParser;
 
+        /**
+         * Default Constructor
+         */
         public Builder() {
-            /**
-             * Default Constructor
-             */
         }
 
         /**
@@ -32,17 +42,28 @@ public class Loader<T> {
          *
          * @return full configured {@link Loader}
          */
-        public Loader<T> build() {
-            return new Loader<>(new Logger(mLoggingEnabled));
+        public Loader<B> build() {
+            return new Loader<>(mParser, new Logger(mLoggingEnabled));
+        }
+
+        /**
+         * Set the {@link Parser} to use when saving the object in cache
+         *
+         * @param parser for new {@link Loader}
+         * @return the {@link Loader.Builder} with {@link Parser} configured
+         */
+        public Builder<B> withParser(Parser<B> parser) {
+            this.mParser = parser;
+            return this;
         }
 
         /**
          * Set logging to True so all logs could be showed
          *
-         * @return the {@link Loader.Builder}
+         * @return the {@link Loader.Builder} with {@link Logger} configured
          */
-        public Builder enableLog() {
-            mLoggingEnabled = true;
+        public Builder<B> enableLog() {
+            this.mLoggingEnabled = true;
             return this;
         }
 

@@ -4,7 +4,7 @@ ext {
     compiledSdk = 25
     buildTools = '25.0.2'
     supportLib = '25.1.0'
-    minSdk = 9
+    minSdk = 12
 }
 
 buildscript {
