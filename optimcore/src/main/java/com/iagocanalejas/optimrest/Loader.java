@@ -1,5 +1,9 @@
 package com.iagocanalejas.optimrest;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
+
 import com.iagocanalejas.optimrest.interfaces.Parser;
 import com.iagocanalejas.optimrest.logging.Logger;
 
@@ -28,14 +32,20 @@ public class Loader<T> {
      */
     public class Builder<B> {
 
-        private boolean mLoggingEnabled = false;
+        private final Context mContext;
         private Parser<B> mParser;
+
+        private Long mRamCacheSize;
+        private boolean mLoggingEnabled = false;
 
         /**
          * Default Constructor
          */
-        public Builder() {
+        public Builder(Context context) {
+            this.mContext = context;
         }
+
+        //region Loader Configuration
 
         /**
          * Create a new {@link Loader} with all the configuration parameters
@@ -43,6 +53,9 @@ public class Loader<T> {
          * @return full configured {@link Loader}
          */
         public Loader<B> build() {
+            if (mRamCacheSize == null) {
+                mRamCacheSize = getMaxApplicationRam(mContext) / 4;
+            }
             return new Loader<>(mParser, new Logger(mLoggingEnabled));
         }
 
@@ -58,6 +71,17 @@ public class Loader<T> {
         }
 
         /**
+         * Set the maximum amount of RAM our cache can use
+         *
+         * @param ramCacheSize max cache size
+         * @return the {@link Loader.Builder} with RAM size configured
+         */
+        public Builder<B> withMaxRamUssage(long ramCacheSize) {
+            this.mRamCacheSize = ramCacheSize;
+            return this;
+        }
+
+        /**
          * Set logging to True so all logs could be showed
          *
          * @return the {@link Loader.Builder} with {@link Logger} configured
@@ -66,6 +90,23 @@ public class Loader<T> {
             this.mLoggingEnabled = true;
             return this;
         }
+        //endregion
+
+        //region Builder Utils
+
+        /**
+         * Compute the amount of RAM the app can use
+         *
+         * @param context required app context
+         * @return max RAM the app can use
+         */
+        private long getMaxApplicationRam(Context context) {
+            ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+            ((ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE))
+                    .getMemoryInfo(new ActivityManager.MemoryInfo());
+            return memoryInfo.availMem;
+        }
+        //endregion
 
     }
 
