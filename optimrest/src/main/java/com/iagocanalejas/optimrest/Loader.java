@@ -8,6 +8,7 @@ import com.iagocanalejas.optimrest.cache.RamCache;
 import com.iagocanalejas.optimrest.cache.RamSerializedCache;
 import com.iagocanalejas.optimrest.interfaces.Cache;
 import com.iagocanalejas.optimrest.interfaces.Callback;
+import com.iagocanalejas.optimrest.interfaces.Downloader;
 import com.iagocanalejas.optimrest.interfaces.Parser;
 import com.iagocanalejas.optimrest.interfaces.SizeOf;
 import com.iagocanalejas.optimrest.logging.Logger;
@@ -22,6 +23,8 @@ public class Loader<T> {
     private static final String TAG = Loader.class.getSimpleName();
 
     private final Logger mLogger;
+
+    private final Downloader<T> mDownloader;
     private final Parser<T> mParser;
     private final Cache<String, T> mCache;
     private final Callback<T> mCallback;
@@ -29,12 +32,16 @@ public class Loader<T> {
     /**
      * Default constructor.
      *
-     * @param parser   {@link Parser}.
-     * @param cache    {@link Cache}.
-     * @param callback {@link Callback}
-     * @param logger   {@link Logger}.
+     * @param downloader {@link Downloader}.
+     * @param parser     {@link Parser}.
+     * @param cache      {@link Cache}.
+     * @param callback   {@link Callback}
+     * @param logger     {@link Logger}.
      */
-    private Loader(Parser<T> parser, Cache<String, T> cache, Callback<T> callback, Logger logger) {
+    private Loader(Downloader<T> downloader, Parser<T> parser, Cache<String, T> cache,
+                   Callback<T> callback, Logger logger) {
+
+        this.mDownloader = downloader;
         this.mParser = parser;
         this.mCache = cache;
         this.mCallback = callback;
@@ -47,6 +54,7 @@ public class Loader<T> {
     public class Builder<B> {
 
         private final Context mContext;
+        private Downloader<B> mDownloader;
         private Parser<B> mParser;
         private SizeOf<B> mSizeOf;
         private Callback<B> mCallback;
@@ -71,7 +79,19 @@ public class Loader<T> {
          * @return full configured {@link Loader}.
          */
         public Loader<B> build() {
-            return new Loader<>(mParser, getRamCache(), mCallback, new Logger(mLoggingEnabled));
+            return new Loader<>(mDownloader, mParser, getRamCache(), mCallback,
+                    new Logger(mLoggingEnabled));
+        }
+
+        /**
+         * Set the {@link Downloader} to use for get server data.
+         *
+         * @param downloader for new {@link Loader}.
+         * @return the {@link Loader.Builder} with {@link Downloader} configured.
+         */
+        public Builder<B> withDownloader(Downloader<B> downloader) {
+            this.mDownloader = downloader;
+            return this;
         }
 
         /**
