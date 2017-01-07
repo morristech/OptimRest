@@ -1,1 +1,1 @@
-include ':optimrest'
+include ':optimrest', ':optimrest-retrofit'

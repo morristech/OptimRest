@@ -30,11 +30,24 @@ public class RamSerializedCache<V> implements Cache<String, V> {
         }, maxSize);
     }
 
+    /**
+     * Deserialize the retrieved object
+     *
+     * @param key to find.
+     * @return Deserialized object
+     */
     @Override
     public V get(String key) {
         return mParser.read(mRamCache.get(key));
     }
 
+    /**
+     * Serialize the object to catch
+     *
+     * @param key   for the value.
+     * @param value to add.
+     * @return previous existing object with given key
+     */
     @Override
     public V put(String key, V value) {
         String previous = mRamCache.put(key, mParser.write(value));

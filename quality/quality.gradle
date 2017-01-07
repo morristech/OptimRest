@@ -46,7 +46,7 @@ task findbugs(type: FindBugs, dependsOn: "assembleDebug") {
     reportLevel = "high"
 
     excludeFilter = new File("${project.rootDir}/quality/findbugs-filter.xml")
-    classes = files("${project.rootDir}/optimcore/build/intermediates/classes")
+    classes = files("${project.buildDir}/intermediates/classes")
 
     source 'src/main/java'
     include '**/*.java'
@@ -67,6 +67,7 @@ android {
     lintOptions {
         lintConfig file("${project.rootDir}/quality/lint.xml")
         abortOnError true
+        disable 'InvalidPackage'
 
         htmlReport true
         htmlOutput file("$project.buildDir/reports/lint/lint.html")

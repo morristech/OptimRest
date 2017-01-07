@@ -20,7 +20,7 @@ public interface Cache<K, V> {
      *
      * @param key   for the value.
      * @param value to add.
-     * @return added value or null.
+     * @return previous existing object with given key.
      */
     V put(K key, V value);
 

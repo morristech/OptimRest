@@ -19,7 +19,7 @@ branches:
 
 script:
   - ./gradlew clean
-  - ./gradlew optimcore:check -Ptravis
+  - ./gradlew optimrest:check -Ptravis
 
 notifications:
   email:

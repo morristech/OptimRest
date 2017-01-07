@@ -5,6 +5,9 @@ ext {
     buildTools = '25.0.2'
     supportLib = '25.1.0'
     minSdk = 12
+
+    retrofit = '2.1.0'
+
 }
 
 buildscript {

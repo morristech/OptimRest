@@ -7,6 +7,7 @@ import android.content.Context;
 import com.iagocanalejas.optimrest.cache.RamCache;
 import com.iagocanalejas.optimrest.cache.RamSerializedCache;
 import com.iagocanalejas.optimrest.interfaces.Cache;
+import com.iagocanalejas.optimrest.interfaces.Callback;
 import com.iagocanalejas.optimrest.interfaces.Parser;
 import com.iagocanalejas.optimrest.interfaces.SizeOf;
 import com.iagocanalejas.optimrest.logging.Logger;
@@ -23,17 +24,20 @@ public class Loader<T> {
     private final Logger mLogger;
     private final Parser<T> mParser;
     private final Cache<String, T> mCache;
+    private final Callback<T> mCallback;
 
     /**
      * Default constructor.
      *
-     * @param parser {@link Parser}.
-     * @param cache  {@link Cache}.
-     * @param logger {@link Logger}.
+     * @param parser   {@link Parser}.
+     * @param cache    {@link Cache}.
+     * @param callback {@link Callback}
+     * @param logger   {@link Logger}.
      */
-    private Loader(Parser<T> parser, Cache<String, T> cache, Logger logger) {
+    private Loader(Parser<T> parser, Cache<String, T> cache, Callback<T> callback, Logger logger) {
         this.mParser = parser;
         this.mCache = cache;
+        this.mCallback = callback;
         this.mLogger = logger;
     }
 
@@ -45,6 +49,7 @@ public class Loader<T> {
         private final Context mContext;
         private Parser<B> mParser;
         private SizeOf<B> mSizeOf;
+        private Callback<B> mCallback;
 
         private Integer mRamCacheSize;
         private boolean mLoggingEnabled = false;
@@ -66,13 +71,7 @@ public class Loader<T> {
          * @return full configured {@link Loader}.
          */
         public Loader<B> build() {
-            if (mRamCacheSize == null) {
-                /**
-                 * Set default RAM size as a quarter of max app RAM.
-                 */
-                mRamCacheSize = getMaxApplicationRam(mContext) / 4;
-            }
-            return new Loader<>(mParser, getRamCache(), new Logger(mLoggingEnabled));
+            return new Loader<>(mParser, getRamCache(), mCallback, new Logger(mLoggingEnabled));
         }
 
         /**
@@ -111,6 +110,11 @@ public class Loader<T> {
             return this;
         }
 
+        public Builder<B> withCallback(Callback<B> callback) {
+            this.mCallback = callback;
+            return this;
+        }
+
         /**
          * Set logging to True so all logs could be showed.
          *
@@ -144,6 +148,9 @@ public class Loader<T> {
          * {@link RamCache} otherwise
          */
         private Cache<String, B> getRamCache() {
+            if (mRamCacheSize == null) {
+                mRamCacheSize = getMaxApplicationRam(mContext) / 4;
+            }
             if (mParser != null) {
                 return new RamSerializedCache<>(mParser, mRamCacheSize);
             }
